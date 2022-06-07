@@ -1,0 +1,12 @@
+.DS_Store
+*.pyc
+__pycache__
+*.sh
+core.*
+
+dist/
+*.egg-info
+temp/
+temp_imgs/
+tests/.cache/
+
