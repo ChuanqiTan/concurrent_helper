@@ -11,7 +11,7 @@ with open('README.md', "r") as file:
 
 setup(
     name='concurrent_helper',
-    version='0.13',
+    version='0.15',
     description='The Simplest and Most Powerful Concurrent Helper',
     long_description=long_description,
     long_description_content_type="text/markdown",

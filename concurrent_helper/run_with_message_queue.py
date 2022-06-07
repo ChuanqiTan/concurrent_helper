@@ -9,6 +9,7 @@ Very simple and powerfull concurrent helper.
 
 import time
 import sys
+
 if sys.version_info.major == 2:
     import Queue as Q
 else:
@@ -27,32 +28,34 @@ def _run_with_mq_server(init_func, init_args, func, task_q, result_q):
         try:
             idx, args = task_q.get(block=False)
             start_time = time.time()
-            rtv = run_with_concurrent(
-                func,
-                [
-                    args,
-                ],
-                "x-process",
-                1,
-            )
+            rtv = run_with_concurrent(func, [args,], "x-process", 1,)
             used_time = time.time() - start_time
             result_q.put((used_time, idx, rtv[0]))
         except Q.Empty as _:
             break
 
 
-def _run_with_mq_collect_result(result_q, total_num, func_name):
+def _run_with_mq_collect_result(
+    result_q, total_num, func_name, show_process, show_interval
+):
     total_rtv = [None] * total_num
     finish_num = 0
-    pbar = PrintProcessBar(total_num, func_name, "run_with_message_queue")
+    if show_process == "tqdm":
+        pbar = TqdmProcessBar(total_num, func_name, "run_with_message_queue")
+    elif show_process == "print":
+        pbar = PrintProcessBar(total_num, func_name, "run_with_message_queue")
+    else:
+        pbar = None
 
     while finish_num < total_num:
         used_time, idx, rtv = result_q.get()
         total_rtv[idx] = rtv
         finish_num += 1
-        pbar.update(1, used_time)
+        if (finish_num % show_interval == 0 or finish_num == total_num) and pbar:
+            pbar.update(show_interval, used_time)
 
-    pbar.close()
+    if pbar:
+        pbar.close()
     return total_rtv
 
 
@@ -61,6 +64,8 @@ def run_with_message_queue(
     init_args_list,  # it will set concurrent_num == len(init_args_list)
     func,
     args_list,
+    show_process="print",  # ["", "tqdm", "print"]
+    show_interval=1,
 ):
     """
     run_with_message_queue 要解决的问题是:
@@ -72,6 +77,10 @@ def run_with_message_queue(
         如果是提前分配的GPUID, 13很快跑完了, 这时候24会跑在同一张卡上,造成显存崩溃.
         而且这种方式显卡的使用也不充分. 用消息队列+服务的方式启动,是最优的选择.
     """
+    if show_interval < 1:
+        show_interval = int(len(args_list) * show_interval)
+    show_interval = max(1, show_interval)
+
     result_q = Queue()
     task_q = Queue()
     for idx, args in enumerate(args_list):
@@ -86,7 +95,9 @@ def run_with_message_queue(
         p.start()
         running_servers.append(p)
 
-    total_rtvs = _run_with_mq_collect_result(result_q, len(args_list), func.__name__)
+    total_rtvs = _run_with_mq_collect_result(
+        result_q, len(args_list), func.__name__, show_process, show_interval
+    )
     for server in running_servers:
         server.terminate()
 

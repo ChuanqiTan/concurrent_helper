@@ -7,16 +7,6 @@ Setup
 pip install concurrent_helper
 ```
 
-TODO
-----------
-
-- Detail docs
-- English describe about run_with_message_queue
-- More code examples
-- Add params "show_process, show_interval" to run_with_message_queue
-- [DONE] Remove raise_exception param, it will be default action.
-
-
 
 2 Core Functions: run_with_concurrent & run_with_message_queue
 ----------
@@ -29,15 +19,16 @@ def run_with_concurrent(
     concurrent_num=1,
     show_process="",  # ["", "tqdm", "print"]
     show_interval=1,
-    raise_exception=True,
 ):
     pass
 
 def run_with_message_queue(
     init_func,
-    init_args_list,
+    init_args_list,  # it will set concurrent_num == len(init_args_list)
     func,
     args_list,
+    show_process="print",  # ["", "tqdm", "print"]
+    show_interval=1,
 ):
     pass
 ```
@@ -146,3 +137,11 @@ outputs:
 >>>>>> Fns 10 work with run_with_message_queue total use     0.0272 seconds.
 [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
 ```
+
+
+TODO
+----------
+
+- Detail docs: english describe about run_with_message_queue & more code examples
+- [DONE] Add params "show_process, show_interval" to run_with_message_queue
+- [DONE] Remove raise_exception param, it will be default action.

@@ -10,6 +10,7 @@ Very simple and powerfull concurrent helper.
 import logging
 import time
 import sys
+
 if sys.version_info.major == 2:
     import Queue as Q
 else:
