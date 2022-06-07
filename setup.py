@@ -5,15 +5,14 @@ from setuptools import setup, Extension
 import os
 
 
-this_dir = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(this_dir, 'README.md'), encoding='utf-8') as file:
+with open('README.md', "r") as file:
     long_description = file.read()
 
 
 setup(
     name='concurrent_helper',
-    version='0.12',
-    description='Very simple and powerfull concurrent helper.',
+    version='0.13',
+    description='The Simplest and Most Powerful Concurrent Helper',
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Chuanqi Tan',

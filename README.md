@@ -40,8 +40,8 @@ concurrent_type:
 | type        | Description                 |
 | ----------- | ----------------------------|
 | single      | like normal for-loop        |
-| thread      | thread-pool                 |
-| process     | porcess-pool                |
+| thread      | thread pool                 |
+| process     | process pool                |
 | x-process   | multi independent process   |
 
 
@@ -71,7 +71,10 @@ rtvs = concurrent_helper.run_with_concurrent(work, list(range(10)), "process")
 print("----")
 rtvs = concurrent_helper.run_with_concurrent(work, list(range(10)), "thread")
 print("----")
-rtvs = concurrent_helper.run_with_message_queue(init, list(range(3)), work, list(range(10)))
+rtvs = concurrent_helper.run_with_message_queue(
+    init, list(range(3)), 
+    work, list(range(10))
+)
 print(rtvs)
 ```
 
