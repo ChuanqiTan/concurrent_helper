@@ -58,7 +58,7 @@ def _run_with_mq_collect_result(result_q, total_num, func_name):
 
 def run_with_message_queue(
     init_func,
-    init_args_list,
+    init_args_list,  # it will set concurrent_num == len(init_args_list)
     func,
     args_list,
 ):

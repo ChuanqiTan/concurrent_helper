@@ -156,7 +156,7 @@ def check_independent_future_as_completed(todo, executor):
 
         for idx in executor.running:
             future = executor.all_tasks[idx]
-            if not future.p.is_alive():
+            if not future.p.is_alive() and future.p.exitcode != 0:
                 future.rtv = -1, ProcessKilledError(future.p.exitcode)
                 future.p.terminate()
                 finished_future = future
@@ -228,7 +228,6 @@ def run_with_concurrent(
     concurrent_num=1,
     show_process="",  # ["", "tqdm", "print"]
     show_interval=1,
-    raise_exception=True,
 ):
     if not args_list:
         return []
@@ -268,15 +267,8 @@ def run_with_concurrent(
         for fns_idx, future in enumerate(
             _check_as_compeleted(to_do, concurrent_type, executor), 1
         ):
-            used_time = -1
-
-            try:
-                used_time, real_rtv = future.result()
-                rtv[to_do[future]] = real_rtv
-            except Exception as e:
-                rtv[to_do[future]] = e
-                if raise_exception:
-                    raise
+            used_time, real_rtv = future.result()
+            rtv[to_do[future]] = real_rtv
 
             if (fns_idx % show_interval == 0 or fns_idx == len(args_list)) and pbar:
                 pbar.update(show_interval, used_time)

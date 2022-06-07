@@ -7,6 +7,16 @@ Setup
 pip install concurrent_helper
 ```
 
+TODO
+----------
+
+- Detail docs
+- English describe about run_with_message_queue
+- More code examples
+- Add params "show_process, show_interval" to run_with_message_queue
+- [DONE] Remove raise_exception param, it will be default action.
+
+
 
 2 Core Functions: run_with_concurrent & run_with_message_queue
 ----------
