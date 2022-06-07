@@ -4,68 +4,22 @@
 Authors:
     chuanqi.tan ### gmail ### com
 
-Very simple and powerfull concurrent helper.
+The Simplest and Most Powerful Concurrent Helper
 """
 
 import logging
 import time
 import sys
+from collections import OrderedDict
+from multiprocessing import Process, Queue
+from concurrent import futures
+
+from .process_bar import make_process_bar
 
 if sys.version_info.major == 2:
     import Queue as Q
 else:
     import queue as Q
-from collections import OrderedDict
-from multiprocessing import Process, Queue
-from concurrent import futures
-
-from tqdm import tqdm
-
-
-class TqdmProcessBar(object):
-    def __init__(self, total, func_name, concurrent_type):
-        self.pbar = tqdm(total=total, desc="[ {} ]".format(func_name))
-
-    def update(self, fns_num, used_time):
-        self.pbar.update(fns_num)
-
-    def close(self):
-        self.pbar.close()
-
-
-class PrintProcessBar(object):
-    def __init__(self, total, func_name, concurrent_type):
-        self.start_time = time.time()
-        self.total_num = total
-        self.func_name = func_name
-        self.concurrent_type = concurrent_type
-        self.finished_num = 0
-
-    def update(self, fns_num, used_time):
-        self.finished_num += fns_num
-        self.finished_num = min(self.finished_num, self.total_num)
-        print(
-            "[{:>5}/{:<5}] ...... Fns {} with {} ...... in {:>10.4f} seconds.".format(
-                self.finished_num,
-                self.total_num,
-                self.func_name,
-                self.concurrent_type,
-                used_time,
-            )
-        )
-
-    def close(self):
-        time_used = time.time() - self.start_time
-        if time_used <= 100:
-            time_str = "{:>10.4f} seconds".format(time_used)
-        else:
-            time_str = "{:>10.4f} minutes".format(time_used / 60.0)
-
-        print(
-            ">>>>>> Fns {} {} with {} total use {}.".format(
-                self.total_num, self.func_name, self.concurrent_type, time_str
-            )
-        )
 
 
 def _run_func_and_time_it(func, *args):
@@ -244,17 +198,10 @@ def run_with_concurrent(
     else:
         raise ValueError("unknow concurrent type, {}".format(concurrent_type))
 
-    if show_interval < 1:
-        show_interval = int(len(args_list) * show_interval)
-    show_interval = max(1, show_interval)
     rtv = [None] * len(args_list)
-
-    if show_process == "tqdm":
-        pbar = TqdmProcessBar(len(args_list), func.__name__, concurrent_type)
-    elif show_process == "print":
-        pbar = PrintProcessBar(len(args_list), func.__name__, concurrent_type)
-    else:
-        pbar = None
+    pbar = make_process_bar(
+        len(args_list), show_process, show_interval, func.__name__, concurrent_type
+    )
 
     with concurrent_executor(max_workers=concurrent_num) as executor:
         to_do = OrderedDict()
@@ -270,11 +217,7 @@ def run_with_concurrent(
         ):
             used_time, real_rtv = future.result()
             rtv[to_do[future]] = real_rtv
+            pbar.update(used_time)
 
-            if (fns_idx % show_interval == 0 or fns_idx == len(args_list)) and pbar:
-                pbar.update(show_interval, used_time)
-
-    if pbar:
-        pbar.close()
-
+    pbar.close()
     return rtv

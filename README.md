@@ -142,6 +142,6 @@ outputs:
 TODO
 ----------
 
-- Detail docs: english describe about run_with_message_queue & more code examples
+- Detail docs & English describe about run_with_message_queue & More code examples
 - [DONE] Add params "show_process, show_interval" to run_with_message_queue
 - [DONE] Remove raise_exception param, it will be default action.

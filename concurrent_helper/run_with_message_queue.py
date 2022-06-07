@@ -4,19 +4,20 @@
 Authors:
     chuanqi.tan ### gmail ### com
 
-Very simple and powerfull concurrent helper.
+The Simplest and Most Powerful Concurrent Helper
 """
 
 import time
 import sys
+from multiprocessing import Process, Queue
+
+from .run_with_concurrent import run_with_concurrent
+from .process_bar import make_process_bar
 
 if sys.version_info.major == 2:
     import Queue as Q
 else:
     import queue as Q
-from multiprocessing import Process, Queue
-
-from .run_with_concurrent import *
 
 
 def _run_with_mq_server(init_func, init_args, func, task_q, result_q):
@@ -40,22 +41,17 @@ def _run_with_mq_collect_result(
 ):
     total_rtv = [None] * total_num
     finish_num = 0
-    if show_process == "tqdm":
-        pbar = TqdmProcessBar(total_num, func_name, "run_with_message_queue")
-    elif show_process == "print":
-        pbar = PrintProcessBar(total_num, func_name, "run_with_message_queue")
-    else:
-        pbar = None
+    pbar = make_process_bar(
+        total_num, show_process, show_interval, func_name, "run_with_message_queue"
+    )
 
     while finish_num < total_num:
         used_time, idx, rtv = result_q.get()
         total_rtv[idx] = rtv
         finish_num += 1
-        if (finish_num % show_interval == 0 or finish_num == total_num) and pbar:
-            pbar.update(show_interval, used_time)
+        pbar.update(used_time)
 
-    if pbar:
-        pbar.close()
+    pbar.close()
     return total_rtv
 
 
