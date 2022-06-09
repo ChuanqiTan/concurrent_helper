@@ -87,8 +87,10 @@ Key Params
 
 Warning:
 
-Arrocding to this issue: <https://github.com/agronholm/pythonfutures/issues/29>, there is a bug in ``concurrent.futures`` of Python2.
+> Arrocding to this issue: <https://github.com/agronholm/pythonfutures/issues/29>, there is a bug in ``concurrent.futures`` of Python2.
 The relevant fix upstream uses Python 3 features and cannot be backported.
+
+> This bug only happen when child-process killed by system (for exapmle, memory overflow). If you encounter this problem, use the ``x-process`` instead of ``process`` when you are using Python2.
 
 
 ``show_process``:
@@ -101,7 +103,7 @@ The relevant fix upstream uses Python 3 features and cannot be backported.
 
 Warning:
 
-Please note that tqdm is not thread safe, use print if you need the guarantee of thread safe.
+> Please note that tqdm is not thread safe, use print if you need the guarantee of thread safe.
 
 
 ``show_interval``:
@@ -129,13 +131,13 @@ def run_with_message_queue(
 
 Run function by ``Message Queue + Service`` mode.
 
-Fist, start N (``N=len(init_args_list)``) services, these services will inited by ``init_func``. 
-After that, these services will obtain M (``M=len(args_list)``) tasks from message queue and run these by ``func``.
+> Fist, start N (``N=len(init_args_list)``) services, these services will inited by ``init_func``. 
+> 
+> After that, these services will obtain M (``M=len(args_list)``) tasks from message queue and run these by ``func``.
 
 Why we need ``Message Queue + Service`` mode?
 
-In order to maximize resource utilization (like GPU), we should to start a certain number of services according to the number of resources. 
-Then, these services will obtain tasks from the message queue and run them.
+> In order to maximize resource utilization (like GPU), we should to start a certain number of services according to the number of resources. Then, these services will obtain tasks from the message queue and run them.
 
 
 Examples
@@ -209,7 +211,7 @@ outputs:
 37068: I am working on 2 for 2
 37069: I am working on 0 for 3
 37070: I am working on 1 for 4
-[work / x-process]: 100%|███████████████████████████████| 5/5 [00:00<00:00, 346.26it/s]
+[work / x-process]: 100%|█████████████████| 5/5 [00:00<00:00, 346.26it/s]
 ----
 37074: I am working on 0 for 0
 37075: I am working on 1 for 1
