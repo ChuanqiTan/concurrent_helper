@@ -181,8 +181,8 @@ def run_with_concurrent(
     args_list,
     concurrent_type="thread",  # ["single", "thread", "process", "x-process"]
     concurrent_num=1,
-    show_process="",  # ["", "tqdm", "print"]
-    show_interval=1,
+    show_process="print",  # ["", "tqdm", "print"]
+    show_interval=0.01,
 ):
     if not args_list:
         return []

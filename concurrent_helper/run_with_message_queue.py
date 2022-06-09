@@ -61,18 +61,8 @@ def run_with_message_queue(
     func,
     args_list,
     show_process="print",  # ["", "tqdm", "print"]
-    show_interval=1,
+    show_interval=0.01,
 ):
-    """
-    run_with_message_queue 要解决的问题是:
-        不应该提前分配GPUID(其它资源同理), 否则在任务运行时间差别大的极端情况下,会有超出
-        预期的任务集中在一张卡的,造成显存溢出.
-
-    eg:
-        1234共四个任务,双卡,2并发,假设每卡最多只能跑1并发.
-        如果是提前分配的GPUID, 13很快跑完了, 这时候24会跑在同一张卡上,造成显存崩溃.
-        而且这种方式显卡的使用也不充分. 用消息队列+服务的方式启动,是最优的选择.
-    """
     if show_interval < 1:
         show_interval = int(len(args_list) * show_interval)
     show_interval = max(1, show_interval)
