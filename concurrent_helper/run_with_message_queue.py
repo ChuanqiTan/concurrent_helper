@@ -29,7 +29,7 @@ def _run_with_mq_server(init_func, init_args, func, task_q, result_q):
         try:
             idx, args = task_q.get(block=False)
             start_time = time.time()
-            rtv = run_with_concurrent(func, [args,], "x-process", 1,)
+            rtv = run_with_concurrent(func, [args,], "x-process", 1, "")
             used_time = time.time() - start_time
             result_q.put((used_time, idx, rtv[0]))
         except Q.Empty as _:

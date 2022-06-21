@@ -11,7 +11,7 @@ pip install concurrent-helper
 Key Features
 ===============
 
-- Simplest and powerful, very easy to use.
+- Simplest and powerful, very easy to use, **only 2 core functions**.
 - Works well both on ``Python2`` and ``Python3``.
 - Support for multiple concurrent modes: ``thread pool, process pool and independent multi-processes``.
 - Support the mode of ``Message Queue + Service``.
